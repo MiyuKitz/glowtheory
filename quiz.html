@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Skin Quiz: Find Your Routine | Glow Theory</title>
+<meta name="description" content="Answer 5 quick questions about your skin type, concerns, makeup style and budget to get a matched morning and night skincare routine.">
+<link rel="canonical" href="https://glowtheoryskin.com/quiz.html">
+<meta property="og:title" content="Skin Quiz: Find Your Routine | Glow Theory">
+<meta property="og:description" content="Answer 5 quick questions about your skin type, concerns, makeup style and budget to get a matched morning and night skincare routine.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://glowtheoryskin.com/quiz.html">
+<meta property="og:site_name" content="Glow Theory">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Figtree:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="logo" href="/"><span class="drop" aria-hidden="true"></span>Glow Theory</a>
+    <nav aria-label="Main"><a href="/">Home</a><a href="/clear-skin.html">Clear Skin</a><a href="/the-glow-edit.html">The Glow Edit</a><a href="/worth-the-hype.html">Worth the Hype?</a><a href="/quiz.html" aria-current="page">Skin quiz</a><a href="/about.html">About</a></nav>
+  </header>
+  <main>
+    <section class="quiz">
+      <span class="tag">Skin quiz</span>
+      <h1>Find your routine in 5 questions</h1>
+      <p class="intro">Tell us about your skin, makeup style and budget. You'll get an AM/PM routine with products matched to you.</p>
+      <div class="progress" aria-hidden="true"><i id="q-bar"></i></div>
+      <div id="q-root" aria-live="polite"></div>
+    </section>
+  </main>
+<script>
+(function(){
+/* ---------- Skin quiz ---------- */
+  const Q=[
+    {id:'type',title:'What does your skin feel like by midday?',opts:[
+      ['oily','Shiny all over','Oil on forehead, nose and cheeks'],
+      ['combo','Oily T-zone, normal cheeks','Shine mainly on forehead and nose'],
+      ['dry','Tight or flaky','Needs moisturiser to feel comfortable'],
+      ['sensitive','Easily red or stingy','Reacts to new products or fragrance']]},
+    {id:'concern',title:'What do you most want to fix?',opts:[
+      ['breakouts','Breakouts','Active pimples, clogged pores'],
+      ['spots','Dark spots & acne marks','Hyperpigmentation that lingers'],
+      ['texture','Texture & pores','Bumpy, rough, visible pores'],
+      ['tone','Dull or uneven tone','Want brighter, more even skin']]},
+    {id:'retinol',title:'Have you used retinol before?',opts:[
+      ['never','Never','Totally new to retinoids'],
+      ['some','A little','Tried it a few times, maybe some peeling'],
+      ['regular','Yes, regularly','My skin handles it well']]},
+    {id:'look',title:'How do you like your skin during the day?',opts:[
+      ['bare','Bare skin','Just sunscreen, invisible finish'],
+      ['toneup','Light tone-up','Sunscreen that evens tone and works as primer'],
+      ['cushion','Cushion finish','Sun cushion with light coverage']]},
+    {id:'budget',title:'What do you usually spend per product?',opts:[
+      ['save','Under $30','K-beauty and drugstore'],
+      ['mid','$30 to $80','Mid-range favourites'],
+      ['lux','Happy to splurge','Luxury and clinical brands']]}
+  ];
+  const L={type:{oily:'Oily',combo:'Combination',dry:'Dry',sensitive:'Sensitive'},
+    concern:{breakouts:'Breakouts',spots:'Dark spots',texture:'Texture',tone:'Uneven tone'},
+    retinol:{never:'Retinol newbie',some:'Some retinol',regular:'Retinol regular'},
+    look:{bare:'Bare skin',toneup:'Tone-up',cushion:'Cushion'},
+    budget:{save:'Under $30',mid:'$30–80',lux:'Splurge'}};
+  let step=0, ans={};
+
+  function pick(a){
+    const toner = a.concern==='texture' && a.type!=='sensitive'
+      ? ['Round Lab 1025 Dokdo Toner','Gentle exfoliation for rough texture']
+      : (a.type==='dry' ? ['Torriden Dive-In Low Molecule HA Toner','Layers of hydration without heaviness']
+                        : ['Anua Heartleaf 77% Soothing Toner','Calms redness and breakouts']);
+    const treat = (a.concern==='spots'||a.concern==='tone')
+      ? ['Numbuzin No.5 Glutathione Vitamin Serum','Brightening for marks and dull tone']
+      : (a.concern==='breakouts' ? ['Spot treatment or BHA (2–3x a week)','Unclogs pores. Skip on retinol nights']
+                                 : ['Niacinamide serum','Helps pores look smaller and controls oil']);
+    let reti;
+    if(a.retinol==='regular' && a.type!=='sensitive') reti=['IOPE Expert Retinol Super Bounce Serum','Stronger retinoid complex for experienced skin'];
+    else if(a.retinol==='never' || a.type==='sensitive') reti=['Haruharu Wonder Black Rice Retinol Serum','Encapsulated 0.08% retinol + bakuchiol. Beginner and acne-friendly'];
+    else reti=['SOME BY MI Retinol Intense Reactivating Serum','0.1% retinol, fragrance-free next step'];
+    const oily = a.type==='oily'||a.type==='combo';
+    let spf;
+    if(a.look==='bare') spf = oily ? ['Dr.G Green Mild Up Sun','SPF50+ PA++++, matte finish for oily skin']
+      : (a.type==='dry' ? ['Round Lab Birch Juice Moisturizing UV Lock','Lotion-like and hydrating'] : ['Pyunkang Yul Airy Protection Sun Stick','SPF50+ PA++++, clear and easy to reapply']);
+    else if(a.look==='toneup') spf = oily ? ['Dr.G Brightening Up Sun Plus','Soft-matte tone-up that grips makeup']
+      : (a.type==='dry' ? ['MISSHA Safe Block RX UV Rosy Tone Up','SPF50+ PA++++, glowy rosy primer effect'] : ['Torriden Balanceful Tone-Up Sunscreen','SPF50+ PA++++, subtle tone-up for sensitive skin']);
+    else spf = oily ? ['NOWATER Tea Tree Day-Day Tone Up Sun Cushion','SPF50+ PA++++, soft natural finish, acne-friendly']
+      : ['rom&nd White Rice Tone Up Sun Cushion','SPF50+ PA++++, smooth semi-matte coverage'];
+    const gentle = a.retinol==='never' || a.type==='sensitive';
+    if(a.budget==='mid'){
+      if(oily) toner[0]="Kiehl's Calendula Herbal-Extract Toner", toner[1]='Alcohol-free, made for normal-to-oily skin';
+      if(a.concern==='spots'||a.concern==='tone') treat[0]='Glow Recipe Watermelon Glow Niacinamide Hue Drops', treat[1]='Tinted niacinamide serum for brightness and glow';
+    }
+    if(a.budget==='lux'){
+      toner[0] = oily ? "Kiehl's Calendula Herbal-Extract Toner" : 'SK-II Facial Treatment Essence';
+      toner[1] = oily ? 'Alcohol-free, calms oil and redness' : 'Cult essence for smoothness and radiance';
+      treat[0]='Estée Lauder Advanced Night Repair'; treat[1]='Hydrating repair serum, works AM or PM';
+      if(!gentle) reti = a.retinol==='regular' ? ['SkinCeuticals Retinol 0.5','Clinical-strength 0.5% retinol cream'] : ['SkinCeuticals Retinol 0.3','Clinical brand, entry strength'];
+    }
+    const nights = a.retinol==='regular' ? 'Most nights' : (a.retinol==='some' ? '3 nights a week' : '2 nights a week to start');
+    return {am:[['Cleanse','Gentle low-pH cleanser'],['Tone',toner[0],toner[1]],['Treat',treat[0],treat[1]],['Moisturise','Light gel or cream'],['Protect',spf[0],spf[1]]],
+            pm:[['Cleanse','Double cleanse if you wore SPF or cushion'],['Tone',toner[0],'Same as morning'],['Retinol',reti[0],reti[1]+' · '+nights],['Moisturise','Barrier cream, extra on retinol nights']],
+            sandwich:a.type==='sensitive'||a.retinol==='never'};
+  }
+  function stepRow(s){
+    const shop = s.length===3 && !/^(Spot|Niacinamide)/.test(s[1]);
+    return `<div class="step"><span class="when">${s[0]}</span><div class="what"><strong>${s[1]}</strong>${s[2]?`<span>${s[2]}</span>`:''}</div>${shop?`<a class="btn primary" href="https://www.amazon.com/s?k=${encodeURIComponent(s[1])}" target="_blank" rel="sponsored nofollow noopener">Check price</a>`:''}</div>`;
+  }
+  function renderQ(){
+    const root=document.getElementById('q-root'), bar=document.getElementById('q-bar');
+    if(step<Q.length){
+      const q=Q[step];
+      bar.style.width=(step/Q.length*100)+'%';
+      root.innerHTML=`<div class="qcard"><span class="label">Question ${step+1} of ${Q.length}</span><h2>${q.title}</h2>
+        <div class="opts">${q.opts.map(o=>`<button class="opt" type="button" data-v="${o[0]}"><b>${o[1]}</b><span>${o[2]}</span></button>`).join('')}</div>
+        <div class="qnav">${step>0?'<button class="linkbtn" type="button" id="q-back">Back</button>':'<span></span>'}</div></div>`;
+      root.querySelectorAll('.opt').forEach(b=>b.addEventListener('click',()=>{ans[q.id]=b.dataset.v;step++;renderQ();}));
+      const back=document.getElementById('q-back'); if(back) back.addEventListener('click',()=>{step--;renderQ();});
+    } else {
+      bar.style.width='100%';
+      const r=pick(ans);
+      root.innerHTML=`<div class="result">
+        <div class="summary">${Object.keys(L).map(k=>`<span class="spec">${L[k][ans[k]]}</span>`).join('')}</div>
+        <h2 style="font-size:26px">Your morning routine</h2><div class="steps">${r.am.map(stepRow).join('')}</div>
+        <h2 style="font-size:26px">Your night routine</h2><div class="steps">${r.pm.map(stepRow).join('')}</div>
+        <div class="callout"><strong>Retinol rules</strong><ul>
+          <li>Night only, pea-sized amount, and always wear SPF the next morning.</li>
+          <li>Don't use it on the same night as BHA/AHA exfoliants.</li>
+          ${r.sandwich?'<li>Sensitive or new? Try the sandwich method: moisturiser, retinol, moisturiser.</li>':''}
+          <li>Pregnant or breastfeeding? Skip retinol and check with your doctor.</li></ul></div>
+        <p class="note">Patch test new products first. If acne is painful or won't settle, a dermatologist can help.</p>
+        <div class="cta-row" style="margin-top:0"><button class="btn ghost" type="button" id="q-redo">Retake quiz</button><a class="btn primary" href="/best-tone-up-sunscreens.html">Read the sunscreen guide</a></div>
+      </div>`;
+      document.getElementById('q-redo').addEventListener('click',()=>{step=0;ans={};renderQ();});
+    }
+  }
+
+  renderQ();
+})();
+</script>
+  <footer>
+    <span>© 2026 Glow Theory</span>
+    <nav aria-label="Legal"><a href="/about.html">About</a><a href="/affiliate-disclosure.html">Affiliate disclosure</a><a href="/privacy.html">Privacy</a></nav>
+    <span class="foot-note">Content is for general information and isn't medical advice. See a dermatologist for skin conditions.</span>
+  </footer>
+</div>
+</body>
+</html>
